@@ -53,17 +53,12 @@ class FLAPJACK < Sensu::Handler
 
     flapjack_event = {
       entity: client['name'],
-      address: client['address'],
       check: check['name'],
-      command: check['command'] || 'unknown',
-      time: Time.at(client['timestamp'].to_i),
+      time: client['timestamp'].to_i,
+      state: STATUSES[check['status']],
       type: 'service',
-      occurrences: @event['occurrences'],
-      history: check['history'].map { |h| STATUSES[h.to_i] }.join(' => '),
       summary: check['notification'] || check['output'],
-      details: details.join(' '),
-      duration: check['duration'],
-      tags: tags
+      details: details.join(' ')
     }
 
     if Redis.new(redis_options).ping == 'PONG'
